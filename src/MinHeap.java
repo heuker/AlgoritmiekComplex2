@@ -41,11 +41,10 @@ public class MinHeap {
 
     public int pop(){
         int popped = heap[0];
-
         heap[0] = heap[numberOfNodes - 1];
-
         int currentPosition = 0;
-        boolean goodTree = false;
+
+        //find somebody to swap with as long as a node below me is lower than me
         while(heap[getLeftChild(currentPosition)] < heap[currentPosition] || heap[getRightChild(currentPosition)] < heap[currentPosition]) {
             //swap with the lower of my children
             if (heap[getLeftChild(currentPosition)] < heap[getRightChild(currentPosition)]){
@@ -56,13 +55,13 @@ public class MinHeap {
                 currentPosition = getRightChild(currentPosition);
             }
 
-            //if we are a leaf node now than we are done
-            if (isLeaf(currentPosition)){
+            //if we are a leaf node now then we are done, if my left child is deadSpace we're also done
+            if (isLeaf(currentPosition) || isDeadSpace(getLeftChild(currentPosition))){
                 break;
             }
 
-            //if we dont have a right child now we can try to swap else we're done
-            if (getRightChild(currentPosition) > numberOfNodes - 1 && heap[getLeftChild(currentPosition)] < heap[currentPosition]){
+            //if we don't have a right child(deadspace included) now we can try to swap else we're done
+            if ((getRightChild(currentPosition) > numberOfNodes - 1 || isDeadSpace(getRightChild(currentPosition))) && heap[getLeftChild(currentPosition)] < heap[currentPosition]){
                 swap(currentPosition, getLeftChild(currentPosition));
             } else {
                 break;
