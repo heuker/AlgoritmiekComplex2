@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
+
 /**
  * Created by Sander on 29-11-2016.
  */
@@ -6,45 +10,77 @@ public class Main {
     public static void main(String[] args) {
         new Main().run();
     }
+
     MinHeap minHeap = new MinHeap(5);
 
-    public void run(){
-//        int[] data = {55 ,56, 42, 23, 90, 23, 83, 25, 1, 21, 45, 76};
-//        Disk INDisck = new Disk(data);
+    public void run() {
+        ArrayList<Integer> data = new ArrayList<>();
+        Random random = new Random();
+        for (int i = 0; i < 50; i++){
+            data.add(random.nextInt(100));
+        }
 
+        Disk disk = new Disk(data);
 
-        minHeap.insert(7);
-        minHeap.insert(2);
-        minHeap.insert(2);
-        minHeap.insert(4);
-        minHeap.insert(3);
-
-        print();
-
-        minHeap.pop();
-        System.out.println("POP");
-        print();
-        System.out.println("Insert 5");
-        minHeap.insert(5);
-
-        print();
-
-        minHeap.pop();
-        System.out.println("POP");
-        print();
-        System.out.println("Insert 3");
-        minHeap.insert(3);
-
-        print();
-
-
+        getRuns(5, disk);
     }
 
-    public void print(){
-        for (int i = 0; i < minHeap.getHeap().length; i++){
+    public void print() {
+        for (int i = 0; i < minHeap.getHeap().length; i++) {
             System.out.print(minHeap.getHeap()[i]);
         }
         System.out.println();
-        System.out.println("Deadspace: " + minHeap.getDeadSpace());
+        System.out.println("Deadspace: " + minHeap.getDeadSpaceSize());
+    }
+
+    public void getRuns(int runSize, Disk disk) {
+        MinHeap heap = new MinHeap(runSize);
+
+        //build heap
+        heap.buildHeap(disk.multipleAsArray(runSize));
+        ArrayList<Integer> run = new ArrayList<>();
+        int lastAdded = -1;
+
+        //While there are numbers to progress
+        while (disk.getData().size() != 0) {
+            //add the next element to the run
+            lastAdded = heap.pop();
+            run.add(lastAdded);
+
+            int next = disk.getNext();
+
+            //If next fits in heap add it
+            if (next >= lastAdded) {
+                heap.insert(next);
+
+                //else increase deadspace and add the number to it
+            } else {
+                heap.incrementDeadspace();
+                heap.insertInDeadSpace(next);
+
+                //if deadspace is at max, build heap from it
+                if (heap.getDeadSpaceSize() == runSize) {
+                    heap.buildHeap(heap.getHeap());
+
+                    //write the run to Disk and clear it
+                    disk.writeRunToDisk(run);
+                    run.clear();
+                }
+            }
+        }
+        disk.writeRunToDisk(run);
+        run.clear();
+
+        //if there are numbers left in the deadspace than process them to
+        if (heap.getDeadSpaceSize() != 0){
+            heap.buildHeap(heap.getHeap());
+            for (int i = 0; i < heap.getHeap().length; i++){
+                run.add(heap.pop());
+            }
+            disk.writeRunToDisk(run);
+        }
+
+        //print the result
+        disk.printResult();
     }
 }

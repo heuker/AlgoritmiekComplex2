@@ -8,6 +8,7 @@ public class MinHeap {
 
     /**
      * constructor for new heap
+     *
      * @param size
      */
     public MinHeap(int size) {
@@ -16,77 +17,119 @@ public class MinHeap {
         this.deadSpace = 0;
     }
 
+    public int getSmallest() {
+        return heap[0];
+    }
+
+    /**
+     * Build a heap from a givven array
+     *
+     * @param numbers to add
+     */
+    public void buildHeap(int[] numbers) {
+        //reset deadspace and numberOfNodes
+        deadSpace = 0;
+        numberOfNodes = 0;
+
+        //valid input checking
+        if (numbers.length > heap.length) {
+            System.out.println("Too much to build given");
+            return;
+        }
+
+        //add the numbers
+        for (int i = 0; i < numbers.length; i++) {
+            insert(numbers[i]);
+        }
+    }
+
     /**
      * Insert a number in the tree
+     *
      * @param number to be added number
      */
-    public void insert(int number){
-//        if (number < heap[0]){
-//            deadSpace++;
-//            heap[heap.length - deadSpace] = number;
-//            return;
-//        }
-
+    public void insert(int number) {
         heap[numberOfNodes] = number;
         int currentItem = numberOfNodes;
         numberOfNodes++;
 
         //while my parent is bigger perculate up
-        while( heap[getParent(currentItem)] > heap[currentItem] ){
-            swap(getParent(currentItem),currentItem);
+        while (heap[getParent(currentItem)] > heap[currentItem]) {
+            swap(getParent(currentItem), currentItem);
             currentItem = getParent(currentItem);
         }
 
     }
 
-    public int pop(){
+    /**
+     * Add a number to the deadspace
+     *
+     * @param number to be added
+     */
+    public void insertInDeadSpace(int number) {
+        heap[heap.length - deadSpace] = number;
+    }
+
+    public int pop() {
         int popped = heap[0];
         heap[0] = heap[numberOfNodes - 1];
         int currentPosition = 0;
 
         //find somebody to swap with as long as a node below me is lower than me
-        while(heap[getLeftChild(currentPosition)] < heap[currentPosition] || heap[getRightChild(currentPosition)] < heap[currentPosition]) {
+        while (heap[getLeftChild(currentPosition)] < heap[currentPosition] || heap[getRightChild(currentPosition)] < heap[currentPosition]) {
             //swap with the lower of my children
-            if (heap[getLeftChild(currentPosition)] < heap[getRightChild(currentPosition)]){
+
+            if ((heap[getLeftChild(currentPosition)] < heap[getRightChild(currentPosition)]) && !isDeadSpace(getLeftChild(currentPosition))) {
                 swap(currentPosition, getLeftChild(currentPosition));
                 currentPosition = getLeftChild(currentPosition);
             } else {
+                if (isDeadSpace(getRightChild(currentPosition))){
+                    if ((heap[getLeftChild(currentPosition)] < heap[currentPosition]) && !isDeadSpace(getLeftChild(currentPosition))){
+                        swap(currentPosition, getLeftChild(currentPosition));
+                        break;
+                    }
+                    break;
+                }
+
                 swap(currentPosition, getRightChild(currentPosition));
                 currentPosition = getRightChild(currentPosition);
             }
 
             //if we are a leaf node now then we are done, if my left child is deadSpace we're also done
-            if (isLeaf(currentPosition) || isDeadSpace(getLeftChild(currentPosition))){
+            if (isLeaf(currentPosition) || isDeadSpace(getLeftChild(currentPosition))) {
                 break;
             }
 
             //if we don't have a right child(deadspace included) now we can try to swap else we're done
-            if ((getRightChild(currentPosition) > numberOfNodes - 1 || isDeadSpace(getRightChild(currentPosition))) && heap[getLeftChild(currentPosition)] < heap[currentPosition]){
-                swap(currentPosition, getLeftChild(currentPosition));
-            } else {
-                break;
+            if (getRightChild(currentPosition) > numberOfNodes - 1 || isDeadSpace(getRightChild(currentPosition))) {
+                if (heap[getLeftChild(currentPosition)] < heap[currentPosition]) {
+                    swap(currentPosition, getLeftChild(currentPosition));
+                    break;
+                } else {
+                    break;
+                }
             }
         }
 
 
-
-//        swap(currentPosition, (numberOfNodes-1));
         heap[numberOfNodes - 1] = -1;
         numberOfNodes--;
 
         return popped;
     }
 
-    public void incrementDeadspace(){
+
+    public void incrementDeadspace() {
         deadSpace++;
     }
 
     /**
      * Switches 2 nodes with each other
+     *
      * @param position1 first node to switch
      * @param position2 second node to switch
      */
-    private void swap(int position1, int position2){
+    private void swap(int position1, int position2) {
         int temp = heap[position1];
         heap[position1] = heap[position2];
         heap[position2] = temp;
@@ -94,6 +137,7 @@ public class MinHeap {
 
     /**
      * Returns the left child of a position, if its in the deadspace returns max
+     *
      * @param position the position
      * @return childPosition or max
      */
@@ -107,6 +151,7 @@ public class MinHeap {
 
     /**
      * Returns the right child of a position, if its in the deadspace returns max
+     *
      * @param position the position
      * @return childPosition or max
      */
@@ -122,23 +167,20 @@ public class MinHeap {
         return (position - 1) / 2;
     }
 
-    private boolean isLeaf(int position){
+    private boolean isLeaf(int position) {
         return getLeftChild(position) >= this.numberOfNodes;
     }
 
-    private boolean isDeadSpace(int position){
-        return position > (heap.length - deadSpace);
+    private boolean isDeadSpace(int position) {
+        return position >= (heap.length - deadSpace);
     }
 
     public int[] getHeap() {
         return heap;
     }
 
-    public int getDeadSpace() {
+    public int getDeadSpaceSize() {
         return deadSpace;
     }
 
-    public int getNumberOfNodes() {
-        return numberOfNodes;
-    }
 }
