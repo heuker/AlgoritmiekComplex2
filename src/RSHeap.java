@@ -64,66 +64,57 @@ public class RSHeap {
     }
 
     /**
-     *
-     * @return
+     * Gets the lowest value of the heap and reassembles the heap
+     * @return the lowest value
      */
     public int pop() {
         int popped = heap[0];
         heap[0] = heap[numberOfNodes - 1];
         int currentPosition = 0;
 
-        //find somebody to swap with as long as a node below me is lower than me
-        while (heap[getLeftChild(currentPosition)] < heap[currentPosition] || heap[getRightChild(currentPosition)] < heap[currentPosition]) {
+        //find somebody to swap with as long as a node below me is lower than me(and is available)
+        while (canSwap(currentPosition)) {
 
             //swap with the lower of my children
-            if ((heap[getLeftChild(currentPosition)] < heap[getRightChild(currentPosition)]) && !isDeadSpace(getLeftChild(currentPosition))) {
+            if ((heap[getLeftChild(currentPosition)] < heap[getRightChild(currentPosition)])) {
                 swap(currentPosition, getLeftChild(currentPosition));
                 currentPosition = getLeftChild(currentPosition);
             } else {
-                if (isDeadSpace(getRightChild(currentPosition))){
-                    if ((heap[getLeftChild(currentPosition)] < heap[currentPosition]) && !isDeadSpace(getLeftChild(currentPosition))){
-                        swap(currentPosition, getLeftChild(currentPosition));
-                        break;
-                    }
-                    break;
-                }
-
                 swap(currentPosition, getRightChild(currentPosition));
                 currentPosition = getRightChild(currentPosition);
             }
-
-            //if we are a leaf node now then we are done, if my left child is deadSpace we're also done
-            if (isLeaf(currentPosition) || isDeadSpace(getLeftChild(currentPosition))) {
-                break;
-            }
-
-            //if we don't have a right child(deadspace included) now we can try to swap else we're done
-            if (getRightChild(currentPosition) > numberOfNodes - 1 || isDeadSpace(getRightChild(currentPosition))) {
-                if (heap[getLeftChild(currentPosition)] < heap[currentPosition]) {
-                    swap(currentPosition, getLeftChild(currentPosition));
-                    break;
-                } else {
-                    break;
-                }
-            }
         }
 
+        //If we arent a leaf see if we can swap with our left child
+        if (!isLeaf(currentPosition) && !isDeadSpace(getLeftChild(currentPosition)) && heap[currentPosition] > heap[getLeftChild(currentPosition)]) {
+            swap(currentPosition, getLeftChild(currentPosition));
+        }
 
+        //put -1 in the empty space, for a better overview
         heap[numberOfNodes - 1] = -1;
         numberOfNodes--;
-
         return popped;
     }
 
-//    private boolean canSwap (int position){
-//        if (getLeftChild(position) > numberOfNodes || isDeadSpace(getLeftChild(position)) || getRightChild(position) > numberOfNodes || isDeadSpace(getRightChild(position))){
-//            return false;
-//        } else if (heap[position] < heap[getLeftChild(position)] || heap[position] < heap[getRightChild(position)]){
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
+    /**
+     * Checks if children for a node are swappable
+     * @param position of the node
+     * @return true if children are ok(Not deadspace and Not out of bounds and lower values)
+     */
+    private boolean canSwap(int position) {
+        //check if children are deadspace or out of bounds
+        if (isLeaf(position) || isDeadSpace(getLeftChild(position)) || getRightChild(position) > numberOfNodes || isDeadSpace(getRightChild(position))) {
+            return false;
+
+            //check if children have a lower value than the parent
+        } else if (heap[position] > heap[getLeftChild(position)] || heap[position] > heap[getRightChild(position)]) {
+            return true;
+        }
+
+        //default return false
+        return false;
+
+    }
 
     /**
      * Increments the deadspace
