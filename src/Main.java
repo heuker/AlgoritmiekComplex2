@@ -12,13 +12,13 @@ public class Main {
         //Make a list of random numbers(Duplicates allowed)
         ArrayList<Integer> data = new ArrayList<>();
         Random random = new Random();
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 50; i++) {
             data.add(random.nextInt(100));
         }
 
         //Fill a Disk with the random numbers and run ReplacementSelection
         Disk disk = new Disk(data);
-        ReplacementSelection(1, disk);
+        ReplacementSelection(5, disk);
 
         //print the result
         disk.printResult();
