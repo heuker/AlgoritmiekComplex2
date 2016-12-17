@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -11,7 +10,7 @@ public class Main {
         new Main().run();
     }
 
-    MinHeap minHeap = new MinHeap(5);
+    RSHeap RSHeap = new RSHeap(5);
 
     public void run() {
         ArrayList<Integer> data = new ArrayList<>();
@@ -26,15 +25,15 @@ public class Main {
     }
 
     public void print() {
-        for (int i = 0; i < minHeap.getHeap().length; i++) {
-            System.out.print(minHeap.getHeap()[i]);
+        for (int i = 0; i < RSHeap.getHeap().length; i++) {
+            System.out.print(RSHeap.getHeap()[i]);
         }
         System.out.println();
-        System.out.println("Deadspace: " + minHeap.getDeadSpaceSize());
+        System.out.println("Deadspace: " + RSHeap.getDeadSpaceSize());
     }
 
     public void getRuns(int runSize, Disk disk) {
-        MinHeap heap = new MinHeap(runSize);
+        RSHeap heap = new RSHeap(runSize);
 
         //build heap
         heap.buildHeap(disk.multipleAsArray(runSize));
