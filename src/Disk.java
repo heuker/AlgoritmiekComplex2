@@ -66,10 +66,12 @@ public class Disk {
      */
     public void printResult(){
         for (int i = 0; i < outArray.size(); i++){
-            System.out.println("Run " + i + ":");
+            System.out.print("Run " + i + ":\t");
             for (int j = 0; j < outArray.get(i).size(); j++){
-                System.out.println(outArray.get(i).get(j));
+                System.out.print(outArray.get(i).get(j) + "\t");
             }
+            System.out.println();
         }
+
     }
 }

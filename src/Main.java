@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * Main class that contains Replacement Selection
@@ -9,19 +10,87 @@ public class Main {
     RSHeap RSHeap = new RSHeap(5);
 
     public void run() {
-        //Make a list of random numbers(Duplicates allowed)
+        Scanner scanner = new Scanner(System.in);
+        int choice = 0;
+        while (true){
+            System.out.println("\nMake a choice:");
+            System.out.println("1: Standard");
+            System.out.println("2: Less data than run");
+            System.out.println("3: Data fits run perfectly");
+            System.out.println("4: Data already sorted");
+            System.out.println("5: No data");
+            System.out.println("-1: Quit\n");
+
+            choice = scanner.nextInt();
+
+            if (choice == -1){
+                break;
+            }
+
+            //print the result
+            runReplaceMentSelection(choice).printResult();{
+            }
+        }
+    }
+
+    /**
+     * Method to start making runs of a disk
+     * @param howTo parameter that tells with what data to run
+     * @return a filled in Disk
+     */
+    public Disk runReplaceMentSelection(int howTo){
         ArrayList<Integer> data = new ArrayList<>();
         Random random = new Random();
-        for (int i = 0; i < 50; i++) {
-            data.add(random.nextInt(100));
+        int runSize = 0;
+
+        System.out.println("Input");
+        switch (howTo){
+            case 1:
+                for (int i = 0; i < 50; i++) {
+                    data.add(random.nextInt(100));
+                    System.out.print(data.get(i) + ", ");
+                }
+                runSize = 5;
+                break;
+
+            case 2:
+                for (int i = 0; i < 3; i++) {
+                    data.add(random.nextInt(100));
+                    System.out.print(data.get(i) + ", ");
+                }
+                runSize = 5;
+                break;
+
+            case 3:
+                for (int i = 0; i < 5; i++) {
+                    data.add(random.nextInt(100));
+                    System.out.print(data.get(i) + ", ");
+                }
+                runSize = 5;
+                break;
+
+            case 4:
+                data.add(1);
+                data.add(3);
+                data.add(5);
+                data.add(7);
+                data.add(8);
+                data.add(10);
+                data.add(14);
+                data.add(15);
+
+                runSize = 5;
+                break;
+
+            case 5:
+                runSize = 5;
+
         }
 
-        //Fill a Disk with the random numbers and run ReplacementSelection
+        //make a Disk with the data and run replacementSelection on it
         Disk disk = new Disk(data);
-        ReplacementSelection(5, disk);
-
-        //print the result
-        disk.printResult();
+        replacementSelection(runSize, disk);
+        return disk;
     }
 
     /**
@@ -30,7 +99,7 @@ public class Main {
      * @param runSize the given runSize(Max memory)
      * @param disk    The disk containing the data
      */
-    public void ReplacementSelection(int runSize, Disk disk) {
+    public void replacementSelection(int runSize, Disk disk) {
         RSHeap heap = new RSHeap(runSize);
         boolean lessThanRun = disk.getData().size() < runSize;
 
@@ -84,6 +153,7 @@ public class Main {
             //progress all 'real' numbers
            while (heap.getNumberOfNodes() != 0){
                 run.add(heap.pop());
+                heap.incrementDeadspace();
             }
             disk.writeRunToDisk(run);
             return;
