@@ -86,6 +86,7 @@ public class Main {
                 runSize = 5;
 
         }
+        System.out.println();
 
         //make a Disk with the data and run replacementSelection on it
         Disk disk = new Disk(data);
