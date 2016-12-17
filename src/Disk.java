@@ -30,7 +30,7 @@ public class Disk {
 
         int[] multiple = new int[amount];
         for (int i = 0; i < amount; i++){
-            multiple[i] = data.get(i);
+            multiple[i] = getNext();
         }
 
         return multiple;
