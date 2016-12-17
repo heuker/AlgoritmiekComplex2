@@ -12,7 +12,7 @@ public class Main {
         //Make a list of random numbers(Duplicates allowed)
         ArrayList<Integer> data = new ArrayList<>();
         Random random = new Random();
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 5; i++) {
             data.add(random.nextInt(100));
         }
 
@@ -63,9 +63,12 @@ public class Main {
                 }
             }
         }
+
         //write remaining run to the disk
-        disk.writeRunToDisk(run);
-        run.clear();
+        if (!run.isEmpty()) {
+            disk.writeRunToDisk(run);
+            run.clear();
+        }
 
         //Progress the remaining numbers
         heap.buildHeap(heap.getHeap());
