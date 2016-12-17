@@ -1,5 +1,7 @@
 /**
- * Created by Sander on 13-12-2016.
+ * RSHeap that is implemented as an array
+ *
+ * Has an index 0 that is used
  */
 public class RSHeap {
     private int[] heap;
@@ -8,8 +10,7 @@ public class RSHeap {
 
     /**
      * constructor for new heap
-     *
-     * @param size
+     * @param size of the heap
      */
     public RSHeap(int size) {
         this.heap = new int[size];
@@ -17,13 +18,8 @@ public class RSHeap {
         this.deadSpace = 0;
     }
 
-    public int getSmallest() {
-        return heap[0];
-    }
-
     /**
-     * Build a heap from a givven array
-     *
+     * Build a heap from a given array
      * @param numbers to add
      */
     public void buildHeap(int[] numbers) {
@@ -45,31 +41,32 @@ public class RSHeap {
 
     /**
      * Insert a number in the tree
-     *
      * @param number to be added number
      */
     public void insert(int number) {
         heap[numberOfNodes] = number;
-        int currentItem = numberOfNodes;
+        int currentPosition = numberOfNodes;
         numberOfNodes++;
 
         //while my parent is bigger perculate up
-        while (heap[getParent(currentItem)] > heap[currentItem]) {
-            swap(getParent(currentItem), currentItem);
-            currentItem = getParent(currentItem);
+        while (heap[getParent(currentPosition)] > heap[currentPosition]) {
+            swap(getParent(currentPosition), currentPosition);
+            currentPosition = getParent(currentPosition);
         }
-
     }
 
     /**
-     * Add a number to the deadspace
-     *
+     * Add a number to the first index of the deadspace
      * @param number to be added
      */
     public void insertInDeadSpace(int number) {
         heap[heap.length - deadSpace] = number;
     }
 
+    /**
+     *
+     * @return
+     */
     public int pop() {
         int popped = heap[0];
         heap[0] = heap[numberOfNodes - 1];
@@ -77,8 +74,8 @@ public class RSHeap {
 
         //find somebody to swap with as long as a node below me is lower than me
         while (heap[getLeftChild(currentPosition)] < heap[currentPosition] || heap[getRightChild(currentPosition)] < heap[currentPosition]) {
-            //swap with the lower of my children
 
+            //swap with the lower of my children
             if ((heap[getLeftChild(currentPosition)] < heap[getRightChild(currentPosition)]) && !isDeadSpace(getLeftChild(currentPosition))) {
                 swap(currentPosition, getLeftChild(currentPosition));
                 currentPosition = getLeftChild(currentPosition);
@@ -118,14 +115,25 @@ public class RSHeap {
         return popped;
     }
 
+//    private boolean canSwap (int position){
+//        if (getLeftChild(position) > numberOfNodes || isDeadSpace(getLeftChild(position)) || getRightChild(position) > numberOfNodes || isDeadSpace(getRightChild(position))){
+//            return false;
+//        } else if (heap[position] < heap[getLeftChild(position)] || heap[position] < heap[getRightChild(position)]){
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
 
+    /**
+     * Increments the deadspace
+     */
     public void incrementDeadspace() {
         deadSpace++;
     }
 
     /**
      * Switches 2 nodes with each other
-     *
      * @param position1 first node to switch
      * @param position2 second node to switch
      */
@@ -136,51 +144,58 @@ public class RSHeap {
     }
 
     /**
-     * Returns the left child of a position, if its in the deadspace returns max
-     *
-     * @param position the position
-     * @return childPosition or max
+     * Returns the left child's position of a node
+     * @param position of the node
+     * @return childPosition
      */
     private int getLeftChild(int position) {
-        int childPosition = 2 * position + 1;
-//        if (isDeadSpace(childPosition) || childPosition > numberOfNodes - 1){
-//            return Integer.MAX_VALUE;
-//        }
-        return childPosition;
+        return 2 * position + 1;
     }
 
     /**
-     * Returns the right child of a position, if its in the deadspace returns max
-     *
-     * @param position the position
-     * @return childPosition or max
+     * Returns the right child's position of a node
+     * @param position of the node
+     * @return childPosition
      */
     private int getRightChild(int position) {
-        int childPosition = 2 * position + 2;
-//        if (isDeadSpace(childPosition) || childPosition > numberOfNodes - 1){
-//            return Integer.MAX_VALUE;
-//        }
-        return childPosition;
+        return 2 * position + 2;
     }
 
+    /**
+     * Returns the node's parent's position
+     * @param position of the node
+     * @return the parent's position
+     */
     private int getParent(int position) {
         return (position - 1) / 2;
     }
 
+    /**
+     * Checks if a node is a leaf
+     * @param position the position of the node
+     * @return true or false
+     */
     private boolean isLeaf(int position) {
         return getLeftChild(position) >= this.numberOfNodes;
     }
 
+    /**
+     * Returns if a node is inside the deadspace
+     * @param position of the node
+     * @return true or false
+     */
     private boolean isDeadSpace(int position) {
         return position >= (heap.length - deadSpace);
     }
 
+    //Getters
     public int[] getHeap() {
         return heap;
     }
-
     public int getDeadSpaceSize() {
         return deadSpace;
     }
-
+    public int getNumberOfNodes() {
+        return numberOfNodes;
+    }
 }

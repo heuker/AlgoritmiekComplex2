@@ -12,13 +12,16 @@ public class Main {
         //Make a list of random numbers(Duplicates allowed)
         ArrayList<Integer> data = new ArrayList<>();
         Random random = new Random();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 2; i++) {
             data.add(random.nextInt(100));
         }
 
         //Fill a Disk with the random numbers and run ReplacementSelection
         Disk disk = new Disk(data);
-        ReplacementSelection(5, disk);
+        ReplacementSelection(1, disk);
+
+        //print the result
+        disk.printResult();
     }
 
     /**
@@ -29,6 +32,7 @@ public class Main {
      */
     public void ReplacementSelection(int runSize, Disk disk) {
         RSHeap heap = new RSHeap(runSize);
+        boolean lessThanRun = disk.getData().size() < runSize;
 
         //build heap
         heap.buildHeap(disk.multipleAsArray(runSize));
@@ -70,6 +74,21 @@ public class Main {
             run.clear();
         }
 
+        //special case: data is less than run size so olny progress the current numbers
+        if (lessThanRun){
+            //make the heap think all 0's are deadspace
+            for (int i = 0; i < heap.getHeap().length - heap.getNumberOfNodes(); i++){
+                heap.incrementDeadspace();
+            }
+
+            //progress all 'real' numbers
+           while (heap.getNumberOfNodes() != 0){
+                run.add(heap.pop());
+            }
+            disk.writeRunToDisk(run);
+            return;
+        }
+
         //Progress the remaining numbers
         heap.buildHeap(heap.getHeap());
 
@@ -80,10 +99,6 @@ public class Main {
             heap.incrementDeadspace();
         }
         disk.writeRunToDisk(run);
-
-
-        //print the result
-        disk.printResult();
     }
 
     public static void main(String[] args) {
